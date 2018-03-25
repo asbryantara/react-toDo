@@ -31,9 +31,13 @@ export default class Main extends Component {
 
     handleModalVisible = () => {
         this.setState({modalVisible: !this.state.modalVisible})
+        this.setState({text: ''});
     }
 
     handleSubmit = () => {
+        if(this.state.text==''){
+            alert('Data Tidak Boleh Kosong')
+        }
         axios
         .post('http://rest.learncode.academy/api/bray/todos', {
             name: this.state.text,
@@ -42,7 +46,7 @@ export default class Main extends Component {
         .then((response)=> {
             this.getData()
         });
-
+        this.setState({ text: '' });
         this.handleModalVisible();
     }
 
@@ -113,18 +117,15 @@ export default class Main extends Component {
                                 </Button>
                     <View style={styles.modalAdd} >
                         <Form>
-
                             <Item rounded style={{borderColor:'transparent'}}>
                                 <Input placeholder="Task" onChangeText={this.changeTextHandler} />
-                                <Button transparent >
+                                <Button transparent onPress = { () => {this.handleSubmit()} } >
                                   <Icon name='ios-arrow-dropright-circle' style={{ fontSize: 40, color: "green"}} />
                                 </Button>
                             </Item>
 
                             <View>
                                 <View style={styles.buttonContainer}>
-
-
                                 </View>
                             </View>
                         </Form>
