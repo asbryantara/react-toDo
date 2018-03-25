@@ -4,13 +4,6 @@ import { StackNavigator } from 'react-navigation';
 import Main from './src/app/Main';
 import Login from './src/app/Login';
 const RootStack  = StackNavigator({
-  Login: {
-    screen: Login,
-    navigationOptions: {
-      title : 'Login',
-      headerTitleStyle :{textAlign:'center', alignSelf:'center',flex:1}
-    }
-  },
   Main: {
     screen: Main,
     navigationOptions: {
@@ -19,7 +12,7 @@ const RootStack  = StackNavigator({
     }
   }
 }, {
-  initialRouteName: 'Login'
+  initialRouteName: 'Main'
 }
 );
 

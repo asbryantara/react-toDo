@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Modal,TouchableOpacity,Button,StyleSheet } from 'react-native';
-import { Container, Text, Content, List, Spinner,
+import { Modal,TouchableOpacity,StyleSheet } from 'react-native';
+import { Container, Text, Content, List, Spinner, Button,
          ListItem, Fab, Icon, View, Body,
          Form, Item, Input, CheckBox } from 'native-base';
 
@@ -105,21 +105,26 @@ export default class Main extends Component {
                 onRequestClose={() => {
                     this.setState({modalVisible: false})
                 }}>
-                <TouchableOpacity style={{flex:1}} onPress={() => {this.handleModalVisible(!this.state.modalVisible);}}>
+                <TouchableOpacity style={{flex:1}} activeOpacity={1} onPress={() => {this.handleModalVisible(!this.state.modalVisible);}}>
                 <Container style={{backgroundColor:'#00000090',alignContent:'center',justifyContent:"center"}} >
+                <Button transparent style={{alignSelf: 'center',paddingBottom:30,paddingTop:30}}
+                        onPress={() => {this.handleModalVisible(!this.state.modalVisible);}}>
+                                  <Icon name='ios-close-circle' style={{ fontSize: 40, color: "red"}} />
+                                </Button>
                     <View style={styles.modalAdd} >
                         <Form>
-                            <Item>
-                                <Input placeholder="Task" onChangeText={this.changeTextHandler} style={{alignItems:"center"}}  />
+
+                            <Item rounded style={{borderColor:'transparent'}}>
+                                <Input placeholder="Task" onChangeText={this.changeTextHandler} />
+                                <Button transparent >
+                                  <Icon name='ios-arrow-dropright-circle' style={{ fontSize: 40, color: "green"}} />
+                                </Button>
                             </Item>
+
                             <View>
                                 <View style={styles.buttonContainer}>
-                                    <Button block danger onPress={() => {
-                                    this.handleSubmit();
-                                    }} title="submit" />
-                                    <Button block info onPress={() => {
-                                    this.handleModalVisible(!this.state.modalVisible);
-                                    }} title="cancel" />
+
+
                                 </View>
                             </View>
                         </Form>
