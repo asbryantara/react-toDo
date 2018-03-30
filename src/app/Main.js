@@ -17,7 +17,7 @@ export default class Main extends Component {
             text: "",
             finishTask: false,
             isSwiping: false,
-            dataUpdate: {}
+            dataUpdate: null
         }
     }
 
@@ -36,17 +36,13 @@ export default class Main extends Component {
             .then((response) => {
                 this.getData()
             })
-
     }
-
-
 
     componentWillMount(){
         this.getData()
     }
 
     handleModalVisible = (data=null) => {
-        console.log(data)
         this.setState({modalVisible: !this.state.modalVisible})
         this.setState({isSwiping: !this.state.isSwiping})
         if(data){
@@ -54,44 +50,55 @@ export default class Main extends Component {
                 text: data.name,
                 dataUpdate : data
             });
+            if (this.state.isSwiping == true) {
+                this.swipe[data].recenter()
+                this.setState({
+                    dataUpdate: null
+                });
+            }
         }else{
             this.setState({
                 text: ''
             });
         }
-        if (this.state.isSwiping==true){
-            this.swipe[data].recenter()
-        }
-
     }
 
 
     handleSubmit = (id=null) => {
         if(!this.state.dataUpdate){
             if(this.state.text==''){
-                alert('Data Tidak Boleh Kosong')
-            }
-            axios
-            .post('http://rest.learncode.academy/api/bray/todos', {
-                name: this.state.text,
-                is_finish: this.state.finishTask
-            })
-            .then((response)=> {
-                this.getData()
-            });
-            this.setState({ text: '' })
-            this.handleModalVisible()
-        }else{
-            axios
-            .put('http://rest.learncode.academy/api/bray/todos/' + this.state.dataUpdate.id, {
-                    is_finish: this.state.dataUpdate.is_finish,
-                    name: this.state.text
+                alert('b')
+            }else{
+                axios({
+                    method: 'post',
+                    url: 'http://rest.learncode.academy/api/bray/todos/',
+                    data: {
+                        name: this.state.text,
+                        is_finish: this.state.finishTask
+                    }
                 })
-            .then((response) => {
-                this.getData()
-            })
-            this.setState({ text: '' })
-            this.handleModalVisible(id)
+                .then((response)=> {
+                    this.getData()
+                    this.setState({dataUpdate: null})
+                });
+                this.setState({ text: '' })
+                this.handleModalVisible()
+            }
+        }else{
+            if (this.state.text == '') {
+                alert('a')
+            }else{
+                axios
+                .put('http://rest.learncode.academy/api/bray/todos/' + this.state.dataUpdate.id, {
+                        is_finish: this.state.dataUpdate.is_finish,
+                        name: this.state.text
+                    })
+                .then((response) => {
+                    this.getData()
+                })
+                this.setState({ text: '' })
+                this.handleModalVisible(id)
+            }
         }
     }
 
@@ -113,14 +120,13 @@ export default class Main extends Component {
     }
 
     render(){
+        console.log(this.state.data)
         return (
             <Container>
                 <Content>
-
                     <List >
                         {this.state.tasks.map((item, index) => {
                             return (
-
                                 <Swipeable key={index} onRef={(swipe) => this.swipe[item.id] = swipe}
                                     rightButtons={[(
                                         <TouchableOpacity style = { [styles.rightSwipeItem, { backgroundColor: '#5CEDE4' }] }
@@ -177,36 +183,50 @@ export default class Main extends Component {
                 onRequestClose={() => {
                     this.setState({modalVisible: false})
                 }}>
-                <TouchableOpacity style={{flex:1}} activeOpacity={1} onPress={() => {this.handleModalVisible(this.state.dataUpdate.id ? this.state.dataUpdate.id : '');}}>
-                <Container style={{backgroundColor:'#00000090',alignContent:'center',justifyContent:"center"}} >
-                <Button transparent style={{alignSelf: 'center',paddingBottom:30,paddingTop:30}}
-                        onPress={() => {this.handleModalVisible(this.state.dataUpdate.id ? this.state.dataUpdate.id : '');}}>
-                                  <Icon name='ios-close-circle' style={{ fontSize: 40, color: "red"}} />
-                                </Button>
-                    <View style={styles.modalAdd} >
-                        <Form>
-                            <Item rounded style={{borderColor:'transparent'}}>
-                                <Input placeholder="Task" value={this.state.text} onChangeText={this.changeTextHandler} />
+                    < TouchableOpacity style = {
+                        {
+                            flex: 1
+                        }
+                    }
+                    activeOpacity = {
+                        1
+                    }
+                    onPress = {
+                        () => {
+                            this.handleModalVisible(this.state.dataUpdate && this.state.dataUpdate.id ? this.state.dataUpdate.id : null);
+                        }
+                    } >
+                    <Container style={{backgroundColor:'#00000090',alignContent:'center',justifyContent:"center"}} >
+                    <Button transparent style={{alignSelf: 'center',paddingBottom:30,paddingTop:30}}
+                            onPress = {
+                                () => {
+                                    this.handleModalVisible(this.state.dataUpdate.id ? this.state.dataUpdate.id : null);
+                                }
+                            } >
+                                    <Icon name='ios-close-circle' style={{ fontSize: 40, color: "red"}} />
+                                    </Button>
+                        <View style={styles.modalAdd} >
+                            <Form>
+                                <Item rounded style={{borderColor:'transparent'}}>
+                                    <Input placeholder="Task" value={this.state.text} onChangeText={this.changeTextHandler} />
 
-                                < Button transparent onPress = {
-                                    () => {
-                                        this.handleSubmit(this.state.dataUpdate.id ? this.state.dataUpdate.id : '')
-                                    }
-                                } >
-                                  <Icon name='ios-arrow-dropright-circle' style={{ fontSize: 40, color: "green"}} />
-                                </Button>
-                            </Item>
+                                    < Button transparent onPress = {
+                                        () => {
+                                            this.handleSubmit(this.state.dataUpdate.id ? this.state.dataUpdate.id : null)
+                                        }
+                                    } >
+                                    <Icon name='ios-arrow-dropright-circle' style={{ fontSize: 40, color: "green"}} />
+                                    </Button>
+                                </Item>
 
-                            <View>
-                                <View style={styles.buttonContainer}>
+                                <View>
+                                    <View style={styles.buttonContainer}>
+                                    </View>
                                 </View>
-                            </View>
-                        </Form>
-                    </View>
-                </Container>
-                </TouchableOpacity>
-
-
+                            </Form>
+                        </View>
+                    </Container>
+                    </TouchableOpacity>
                 </Modal>
             </Container>
         )
